@@ -9,6 +9,8 @@ interface SearchResponse {
   result: string;
 }
 
+const API_BASE = process.env.NEXT_PUBLIC_PYTHON_API_URL!;
+
 /**
  * Makes a request to the external search API
  * @param docsetId - The docset ID from the cities table
@@ -22,7 +24,7 @@ export async function callExternalSearchApi(
   sessionId: number
 ): Promise<SearchResponse> {
   try {
-    const response = await fetch("http://localhost:8080/api/search", {
+    const response = await fetch(`${API_BASE}/api/search`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
