@@ -9,7 +9,7 @@ interface SearchResponse {
   result: string;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_PYTHON_API_URL!;
+const API_BASE = process.env.FLASK_SERVER_URL!;
 
 /**
  * Makes a request to the external search API
