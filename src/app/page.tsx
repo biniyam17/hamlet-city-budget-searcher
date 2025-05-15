@@ -113,9 +113,12 @@ export default function Home() {
     <MainLayout>
       <div className="flex flex-col min-h-screen p-8">
         {/* Search section */}
-        <div className="flex-1 max-w-2xl mx-auto" style={{ flexBasis: "90%" }}>
+        <div
+          className="flex-1 w-full max-w-3xl mx-auto"
+          style={{ flexBasis: "90%" }}
+        >
           <form onSubmit={handleSearch} className="space-y-4">
-            <div className="flex gap-2">
+            <div className="flex gap-2 h-12">
               <input
                 type="text"
                 value={searchQuery}
@@ -123,27 +126,33 @@ export default function Home() {
                 placeholder={`Ask a question about ${
                   selectedCity ? toCamelCase(selectedCity) : "the city"
                 }...`}
-                className="flex-1 p-3 border-2 border-brand-primary/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-secondary bg-white shadow-sm placeholder:text-brand-primary/50"
+                className="flex-1 h-full p-3 border-2 border-brand-primary/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-secondary bg-white shadow-sm placeholder:text-brand-primary/50 text-base"
               />
-              <select
-                value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value)}
-                className="p-3 border-2 border-brand-primary/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-secondary bg-white shadow-sm min-w-[140px]"
-                disabled={loadingCities}
-              >
-                {loadingCities ? (
-                  <option>Loading...</option>
-                ) : (
-                  cities.map((city) => (
-                    <option key={city.id} value={city.name}>
-                      {toCamelCase(city.name)}
-                    </option>
-                  ))
-                )}
-              </select>
+              <div className="relative inline-block h-full">
+                <select
+                  value={selectedCity}
+                  onChange={(e) => setSelectedCity(e.target.value)}
+                  disabled={loadingCities}
+                  className="appearance-none pr-8 p-3 h-full border-2 border-brand-primary/30 rounded-lg bg-white shadow-sm min-w-[140px] focus:outline-none focus:ring-2 focus:ring-brand-secondary text-base"
+                >
+                  {loadingCities ? (
+                    <option>Loading…</option>
+                  ) : (
+                    cities.map((c) => (
+                      <option key={c.id} value={c.name}>
+                        {toCamelCase(c.name)}
+                      </option>
+                    ))
+                  )}
+                </select>
+                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-brand-primary/70 text-xs leading-none">
+                  ▼
+                </span>
+              </div>
+
               <button
                 type="submit"
-                className="px-6 py-3 bg-brand-primary border-2 border-brand-primary/30 rounded-lg shadow-md hover:shadow-lg hover:bg-brand-primary/90 focus:outline-none focus:ring-2 focus:ring-brand-secondary transition-colors font-semibold text-lg"
+                className="px-6 py-3 h-full bg-brand-primary border-2 border-brand-primary/30 rounded-lg shadow-md hover:shadow-lg hover:bg-brand-primary/90 focus:outline-none focus:ring-2 focus:ring-brand-secondary transition-colors font-semibold text-lg"
                 disabled={
                   submitting ||
                   loadingCities ||
@@ -182,7 +191,7 @@ export default function Home() {
         </div>
 
         {/* City Suggestion Section - Always at bottom */}
-        <div className="pt-4 mt-auto">
+        <div className="pt-4 mt-auto w-full max-w-3xl mx-auto">
           <form onSubmit={handleCitySuggestion} className="max-w-2xl mx-auto">
             <div className="flex items-center gap-2">
               <input
