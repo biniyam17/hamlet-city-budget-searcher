@@ -1,6 +1,6 @@
 # City Searcher
 
-A modern web application built with Next.js that allows users to search and explore cities. The application features a clean, responsive interface powered by Tailwind CSS and uses Supabase for data management.
+A modern web application built with Next.js that allows users to search and explore city budgets. The application features a clean, responsive interface powered by Tailwind CSS and uses Supabase for data management.
 
 ## Features
 

@@ -76,10 +76,8 @@ export async function POST(req: Request) {
     callExternalSearchApi(city.docset_id, content, session_id);
 
     return NextResponse.json({ message });
-  } catch (e: any) {
-    return NextResponse.json(
-      { error: e.message || "Unknown error" },
-      { status: 500 }
-    );
+  } catch (e: Error | unknown) {
+    const errorMessage = e instanceof Error ? e.message : "Unknown error";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

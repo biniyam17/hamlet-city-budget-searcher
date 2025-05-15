@@ -5,9 +5,8 @@ interface SearchRequest {
 }
 
 interface SearchResponse {
-  // Add response type based on your API's response structure
-  // This is a placeholder - update based on actual response
-  result: any;
+  query_id: string;
+  result: string;
 }
 
 /**

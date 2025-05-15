@@ -1,8 +1,6 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
 import MainLayout from "@/components/layout/MainLayout";
 
 interface Message {
@@ -23,24 +21,10 @@ export default function SessionPage() {
   const [sending, setSending] = useState(false);
   const [polling, setPolling] = useState(true);
   const chatEndRef = useRef<HTMLDivElement>(null);
-
-  // Poll for pending service responses
-  const pollPending = async () => {
-    const res = await fetch(
-      `/api/pending-service-responses?session_id=${sessionId}`
-    );
-    const data = await res.json();
-    if (data.pending) {
-      setPolling(true);
-      setTimeout(pollPending, 10000);
-    } else {
-      setPolling(false);
-      await fetchMessages(); // One final fetch
-    }
-  };
+  const fetchMessagesRef = useRef<(() => Promise<void>) | null>(null);
 
   // Fetch messages
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -51,23 +35,41 @@ export default function SessionPage() {
       } else {
         setError(data.error || "Failed to fetch messages.");
       }
-    } catch (e) {
+    } catch {
       setError("Failed to fetch messages.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [sessionId]);
+
+  // Store fetchMessages in ref
+  useEffect(() => {
+    fetchMessagesRef.current = fetchMessages;
+  }, [fetchMessages]);
+
+  // Poll for pending service responses
+  const pollPending = useCallback(async () => {
+    const res = await fetch(
+      `/api/pending-service-responses?session_id=${sessionId}`
+    );
+    const data = await res.json();
+    if (data.pending) {
+      setPolling(true);
+      setTimeout(pollPending, 10000);
+    } else {
+      setPolling(false);
+      await fetchMessagesRef.current?.(); // Use ref to call fetchMessages
+    }
+  }, [sessionId]);
 
   useEffect(() => {
-    let stopped = false;
-
     fetchMessages(); // Initial fetch
     pollPending();
 
     return () => {
-      stopped = true;
+      // Cleanup if needed
     };
-  }, [sessionId]);
+  }, [sessionId, fetchMessages, pollPending]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -113,7 +115,7 @@ export default function SessionPage() {
       // Start polling for the response
       setPolling(true);
       pollPending();
-    } catch (err) {
+    } catch {
       // Error is already handled by updating the message
     } finally {
       setSending(false);

@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/utils/supabaseClient";
 
+interface City {
+  name: string;
+}
+
+interface Session {
+  id: number;
+  city_id: number;
+  started_at: string;
+  cities: City;
+}
+
 export async function GET() {
   // Fetch sessions joined with city name, ordered by started_at
   const { data: sessions, error } = await supabase
@@ -14,7 +25,7 @@ export async function GET() {
 
   // Compute session number per city
   const citySessionCounts: Record<number, number> = {};
-  const result = sessions.map((session: any) => {
+  const result = (sessions as unknown as Session[]).map((session) => {
     const cityId = session.city_id;
     if (!citySessionCounts[cityId]) citySessionCounts[cityId] = 1;
     else citySessionCounts[cityId] += 1;

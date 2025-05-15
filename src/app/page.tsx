@@ -1,7 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import Image from "next/image";
-import Head from "next/head";
 import { useRouter } from "next/navigation";
 import MainLayout from "@/components/layout/MainLayout";
 
@@ -40,7 +38,7 @@ export default function Home() {
         } else {
           setError("No cities found.");
         }
-      } catch (e) {
+      } catch {
         setError("Failed to fetch cities. Please try again later.");
       } finally {
         setLoadingCities(false);
@@ -89,7 +87,7 @@ export default function Home() {
       }
       // 3. Redirect
       router.push(`/session/${data.session_id}`);
-    } catch (err: any) {
+    } catch {
       setSubmitError("An unexpected error occurred. Please try again.");
     } finally {
       setSubmitting(false);
