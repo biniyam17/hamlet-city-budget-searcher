@@ -1,8 +1,8 @@
 "use client";
 import MainLayout from "@/components/layout/MainLayout";
-import Link from "next/link";
 import { useEffect } from "react";
 import BackButton from "@/components/BackButton";
+import Image from "next/image";
 
 interface InsightCard {
   graphIds: string[];
@@ -75,9 +75,12 @@ export default function Insights() {
                           id={`datawrapper-vis-${graphId}`}
                         >
                           <noscript>
-                            <img
+                            <Image
                               src={`https://datawrapper.dwcdn.net/${graphId}/full.png`}
                               alt="Data visualization"
+                              width={800}
+                              height={400}
+                              priority
                             />
                           </noscript>
                         </div>

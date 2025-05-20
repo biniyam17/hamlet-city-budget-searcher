@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import MainLayout from "@/components/layout/MainLayout";
 import Link from "next/link";
@@ -27,7 +27,7 @@ export default function Home() {
     "Which neighborhoods are getting major redevelopment?",
   ];
 
-  const enabledCities = ["spokane", "tulsa", "honolulu"];
+  const enabledCities = useMemo(() => ["spokane", "tulsa", "honolulu"], []);
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -51,7 +51,7 @@ export default function Home() {
       }
     };
     fetchCities();
-  }, []);
+  }, [enabledCities]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
