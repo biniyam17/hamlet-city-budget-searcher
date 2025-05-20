@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import MainLayout from "@/components/layout/MainLayout";
+import Link from "next/link";
 
 interface City {
   id: number;
@@ -26,6 +27,8 @@ export default function Home() {
     "Which neighborhoods are getting major redevelopment?",
   ];
 
+  const enabledCities = ["spokane", "tulsa", "honolulu"];
+
   useEffect(() => {
     const fetchCities = async () => {
       setLoadingCities(true);
@@ -34,7 +37,10 @@ export default function Home() {
         const data = await res.json();
         if (data.cities && data.cities.length > 0) {
           setCities(data.cities);
-          setSelectedCity(data.cities[0].name);
+          const firstEnabledCity = data.cities.find((city: City) =>
+            enabledCities.includes(city.name.toLowerCase())
+          );
+          setSelectedCity(firstEnabledCity?.name || data.cities[0].name);
         } else {
           setError("No cities found.");
         }
@@ -117,6 +123,23 @@ export default function Home() {
           className="flex-1 w-full max-w-3xl mx-auto"
           style={{ flexBasis: "90%" }}
         >
+          {/* Navigation */}
+          <div className="flex justify-end mb-8">
+            <Link
+              href="/insights"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white text-brand-primary rounded-lg border-2 border-brand-primary/20 hover:bg-brand-primary/5 transition-colors shadow-sm"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+              </svg>
+              View Insights
+            </Link>
+          </div>
           <form onSubmit={handleSearch} className="space-y-4">
             <div className="flex gap-2 h-12">
               <input
@@ -138,11 +161,24 @@ export default function Home() {
                   {loadingCities ? (
                     <option>Loading…</option>
                   ) : (
-                    cities.map((c) => (
-                      <option key={c.id} value={c.name}>
-                        {toCamelCase(c.name)}
-                      </option>
-                    ))
+                    [...cities]
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((c) => {
+                        const isEnabled = enabledCities.includes(
+                          c.name.toLowerCase()
+                        );
+                        return (
+                          <option
+                            key={c.id}
+                            value={c.name}
+                            disabled={!isEnabled}
+                            className={!isEnabled ? "text-gray-400" : ""}
+                          >
+                            {toCamelCase(c.name)}
+                            {!isEnabled && " (Coming Soon)"}
+                          </option>
+                        );
+                      })
                   )}
                 </select>
                 <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-brand-primary/70 text-xs leading-none">
@@ -152,12 +188,13 @@ export default function Home() {
 
               <button
                 type="submit"
-                className="px-6 py-3 h-full bg-brand-primary border-2 border-brand-primary/30 rounded-lg shadow-md hover:shadow-lg hover:bg-brand-primary/90 focus:outline-none focus:ring-2 focus:ring-brand-secondary transition-colors font-semibold text-lg"
+                className="px-6 py-3 h-full bg-brand-primary border-2 border-brand-primary/30 rounded-lg shadow-md hover:shadow-lg hover:bg-brand-primary/90 focus:outline-none focus:ring-2 focus:ring-brand-secondary transition-colors font-semibold text-lg flex items-center justify-center"
                 disabled={
                   submitting ||
                   loadingCities ||
                   !selectedCity ||
-                  !searchQuery.trim()
+                  !searchQuery.trim() ||
+                  !enabledCities.includes(selectedCity.toLowerCase())
                 }
               >
                 {submitting ? "Searching..." : "Search"}
@@ -166,13 +203,15 @@ export default function Home() {
           </form>
 
           {/* Example queries */}
-          <div className="mt-8 space-y-2">
-            <p className="text-sm text-brand-primary/70">Try asking:</p>
+          <div className="mt-8 space-y-2 p-4 bg-brand-secondary/5 rounded-lg border border-brand-primary/10">
+            <p className="text-sm text-brand-primary/70 font-medium">
+              Try asking:
+            </p>
             {exampleQueries.map((query, index) => (
               <button
                 key={index}
                 onClick={() => setSearchQuery(query)}
-                className="block w-full text-left p-2 text-sm text-brand-primary hover:bg-brand-secondary/10 rounded transition-colors"
+                className="block w-full text-left p-2 text-sm text-brand-primary hover:bg-brand-secondary/10 hover:underline decoration-brand-primary/30 rounded transition-colors"
               >
                 {query}
               </button>

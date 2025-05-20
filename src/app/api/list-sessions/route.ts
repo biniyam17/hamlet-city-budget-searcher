@@ -23,19 +23,13 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // Compute session number per city
-  const citySessionCounts: Record<number, number> = {};
-  const result = (sessions as unknown as Session[]).map((session) => {
-    const cityId = session.city_id;
-    if (!citySessionCounts[cityId]) citySessionCounts[cityId] = 1;
-    else citySessionCounts[cityId] += 1;
-    return {
-      id: session.id,
-      city_name: session.cities.name,
-      session_number: citySessionCounts[cityId],
-      started_at: session.started_at,
-    };
-  });
+  // Map sessions to include session number as the ID
+  const result = (sessions as unknown as Session[]).map((session) => ({
+    id: session.id,
+    city_name: session.cities.name,
+    session_number: session.id, // Use session ID directly as session number
+    started_at: session.started_at,
+  }));
 
   // Sort by most recent (descending started_at)
   result.sort((a, b) => b.id - a.id);

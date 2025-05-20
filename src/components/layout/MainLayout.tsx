@@ -76,17 +76,26 @@ export default function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen bg-brand-background flex">
       {/* Sidebar */}
-      <div className="w-64 bg-white border-r border-brand-primary/10 flex flex-col">
+      <div className="w-64 bg-white border-r border-brand-primary/10 flex flex-col h-screen sticky top-0">
         {/* Logo */}
-        <Link href="/" className="p-4 border-b border-brand-primary/10">
+        <Link
+          href="/"
+          className="p-4 border-b border-brand-primary/10 flex-shrink-0 flex items-center gap-3"
+        >
           <Image
             src="/hamlet_logo_dark.svg"
             alt="Hamlet Logo"
-            width={128}
-            height={40}
+            width={48}
+            height={48}
             className="hover:opacity-80 transition-opacity"
             priority
           />
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold text-brand-primary">
+              City Searcher
+            </span>
+            <span className="text-xs text-gray-500">by Hamlet</span>
+          </div>
         </Link>
 
         {/* Sessions List */}
@@ -135,7 +144,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">{children}</div>
+      <div className="flex-1 flex flex-col overflow-y-auto h-screen">
+        {children}
+      </div>
     </div>
   );
 }

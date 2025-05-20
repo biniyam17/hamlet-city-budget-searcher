@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import MainLayout from "@/components/layout/MainLayout";
+import BackButton from "@/components/BackButton";
 
 interface Message {
   id: number;
@@ -124,92 +125,100 @@ export default function SessionPage() {
 
   return (
     <MainLayout>
-      <div className="flex-1 flex items-center justify-center p-4">
-        <div className="w-3/4 mx-auto flex flex-col h-[90vh] bg-white border border-brand-primary/10 rounded-xl shadow-sm overflow-hidden">
-          {/* Chat messages */}
-          <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4 bg-brand-background">
-            {loading && messages.length === 0 ? (
-              <div className="text-center text-brand-primary/70">
-                Loading messages...
-              </div>
-            ) : error ? (
-              <div className="text-center text-red-600">{error}</div>
-            ) : (
-              <>
-                {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${
-                      msg.message_type === "user"
-                        ? "justify-end"
-                        : "justify-start"
-                    }`}
-                  >
+      <div className="flex-1 flex flex-col p-4">
+        {/* Back button positioned in top right */}
+        <div className="flex justify-end mb-4">
+          <BackButton />
+        </div>
+
+        {/* Chat container */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-3/4 mx-auto flex flex-col h-[90vh] bg-white border border-brand-primary/10 rounded-xl shadow-sm overflow-hidden">
+            {/* Chat messages */}
+            <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4 bg-brand-background">
+              {loading && messages.length === 0 ? (
+                <div className="text-center text-brand-primary/70">
+                  Loading messages...
+                </div>
+              ) : error ? (
+                <div className="text-center text-red-600">{error}</div>
+              ) : (
+                <>
+                  {messages.map((msg) => (
                     <div
-                      className={`flex flex-col ${
+                      key={msg.id}
+                      className={`flex ${
                         msg.message_type === "user"
-                          ? "items-end"
-                          : "items-start"
+                          ? "justify-end"
+                          : "justify-start"
                       }`}
                     >
                       <div
-                        className={`px-4 py-2 rounded-2xl text-base max-w-[75%] break-words
-                          ${
-                            msg.message_type === "user"
-                              ? "bg-brand-primary border border-brand-primary rounded-br-md"
-                              : "bg-gray-100 text-brand-primary border border-brand-primary/10 rounded-bl-md"
-                          }
-                        `}
+                        className={`flex flex-col ${
+                          msg.message_type === "user"
+                            ? "items-end"
+                            : "items-start"
+                        }`}
                       >
-                        {msg.content}
+                        <div
+                          className={`px-4 py-2 rounded-2xl text-base max-w-[75%] break-words
+                            ${
+                              msg.message_type === "user"
+                                ? "bg-brand-primary border border-brand-primary rounded-br-md"
+                                : "bg-gray-100 text-brand-primary border border-brand-primary/10 rounded-bl-md"
+                            }
+                          `}
+                        >
+                          {msg.content}
+                        </div>
+                        {msg.error && (
+                          <span className="text-red-500 text-sm mt-1">
+                            {msg.error}
+                          </span>
+                        )}
                       </div>
-                      {msg.error && (
-                        <span className="text-red-500 text-sm mt-1">
-                          {msg.error}
-                        </span>
-                      )}
                     </div>
-                  </div>
-                ))}
-                {polling && (
-                  <div className="text-center text-brand-primary/70">
-                    Waiting for response...
-                  </div>
-                )}
-                <div ref={chatEndRef} />
-              </>
-            )}
-          </div>
-          {/* Chat input bar */}
-          <form
-            onSubmit={handleSend}
-            className="flex items-center gap-2 border-t border-brand-primary/10 bg-white px-4 py-3"
-          >
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={
-                polling ? "Waiting for response..." : "Type your message..."
-              }
-              className="flex-1 p-3 border border-brand-primary/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-secondary bg-gray-50 text-brand-primary disabled:bg-gray-100 disabled:cursor-not-allowed"
-              disabled={sending || polling}
-              autoFocus
-            />
-            <button
-              type="submit"
-              className="border border-brand-primary/10 px-5 py-2 bg-brand-primary rounded-lg font-semibold hover:bg-brand-primary/90 disabled:opacity-50 disabled:cursor-not-allowed relative group"
-              disabled={sending || !input.trim() || polling}
-              title={polling ? "Please wait for the current response" : ""}
-            >
-              Send
-              {polling && (
-                <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-sm py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                  Please wait for the current response
-                </span>
+                  ))}
+                  {polling && (
+                    <div className="text-center text-brand-primary/70">
+                      Waiting for response...
+                    </div>
+                  )}
+                  <div ref={chatEndRef} />
+                </>
               )}
-            </button>
-          </form>
+            </div>
+            {/* Chat input bar */}
+            <form
+              onSubmit={handleSend}
+              className="flex items-center gap-2 border-t border-brand-primary/10 bg-white px-4 py-3"
+            >
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={
+                  polling ? "Waiting for response..." : "Type your message..."
+                }
+                className="flex-1 p-3 border border-brand-primary/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-secondary bg-gray-50 text-brand-primary disabled:bg-gray-100 disabled:cursor-not-allowed"
+                disabled={sending || polling}
+                autoFocus
+              />
+              <button
+                type="submit"
+                className="border border-brand-primary/10 px-5 py-2 bg-brand-primary rounded-lg font-semibold hover:bg-brand-primary/90 disabled:opacity-50 disabled:cursor-not-allowed relative group"
+                disabled={sending || !input.trim() || polling}
+                title={polling ? "Please wait for the current response" : ""}
+              >
+                Send
+                {polling && (
+                  <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-sm py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    Please wait for the current response
+                  </span>
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </MainLayout>
