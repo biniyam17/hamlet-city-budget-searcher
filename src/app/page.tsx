@@ -22,9 +22,9 @@ export default function Home() {
   const router = useRouter();
 
   const exampleQueries = [
+    "What is the city's biggest expense?",
     "What are the city's upcoming infrastructure projects?",
-    "Where is the city planning to invest in affordable housing?",
-    "Which neighborhoods are getting major redevelopment?",
+    "What is the projected city budget for the upcoming year?",
   ];
 
   const enabledCities = useMemo(() => ["spokane", "tulsa", "honolulu"], []);
